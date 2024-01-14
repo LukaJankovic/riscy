@@ -1,8 +1,8 @@
 VIVADO_SETTINGS := C:/Xilinx/Vivado/2023.2/settings64.sh
 
-PROJ_NAME		:= example
-SIM_TOP			:= example_tb
-TOP				:= and_gate
+PROJ_NAME		:= riscy
+SIM_TOP			:= riscy_tb
+TOP				:= riscy_top
 
 SRC_DIR			:= src
 SIM_DIR			:= sim
