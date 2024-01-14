@@ -1,0 +1,26 @@
+set_param general.maxThreads {{THREADS}}
+read_vhdl [glob ../{{SRC}}/*.vhdl]
+read_xdc ../{{CONST}}
+
+synth_design -part {{PART}} -top {{TOP}}
+write_checkpoint -force post_synth.dcp
+report_timing_summary -file timing_syn.rpt
+
+opt_design
+place_design
+phys_opt_design
+write_checkpoint -force post_place
+report_timing_summary -file post_place_timing_summary.rpt
+
+route_design
+write_checkpoint -force post_route
+report_timing_summary -file post_route_timing_summary.rpt
+report_timing -sort_by group -max_paths 100 -path_type summary -file post_route_timing.rpt
+report_clock_utilization -file clock_util.rpt
+report_utilization -file post_route_util.rpt
+report_power -file post_route_power.rpt
+report_drc -file post_imp_drc.rpt
+write_verilog -force bft_impl_netlist.v
+write_xdc -no_fixed_only -force bft_impl.xdc
+
+write_bitstream -force {{PROJ}}.bit
