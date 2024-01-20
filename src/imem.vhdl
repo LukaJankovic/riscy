@@ -16,9 +16,14 @@ architecture behav of imem is
 
     type imem_type is array (0 to 31) of std_logic_vector (31 downto 0);
     signal imem_ram : imem_type := (
-        x"12345678",
-        x"91011121",
-        x"DEADBEEF",
+        x"00000293",
+        x"00a28333",
+        x"00030303",
+        x"00030663",
+        x"00128293",
+        x"ff1ff06f",
+        x"00028513",
+        x"00008067",
         others => (others => '0')
     );
 
