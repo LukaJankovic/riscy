@@ -63,19 +63,19 @@ architecture behav of riscy_top is
 
 begin
 
-    U1 : ifetch port map (
+    U1 : ifetch port map(
         clk,
         reset,
         inst_addr
     );
 
-    U2 : imem port map (
+    U2 : imem port map(
         clk,
         inst_addr,
         inst_data
     );
 
-    U3 : idecode port map (
+    U3 : idecode port map(
         inst => inst_data,
         opcode => opcode,
         rd => rd,
