@@ -2,6 +2,7 @@ library ieee;
 
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use std.textio.all;
 
 entity imem is
     port (
@@ -14,7 +15,7 @@ end imem;
 
 architecture behav of imem is
 
-    type imem_type is array (0 to 31) of std_logic_vector (31 downto 0);
+    type imem_type is array (0 to 31) of bit_vector (31 downto 0);
 
     impure function init_ram(file_name : in string) return imem_type is
         file ram_file : text is in file_name;
@@ -28,7 +29,7 @@ architecture behav of imem is
         return imem;
     end function;
 
-    signal imem_ram : imem_type := init_ram ("ram.data")
+    signal imem_ram : imem_type := init_ram ("../prog/strlen.bin");
 
     --signal imem_ram : imem_type := (
     --    x"00000293",
@@ -46,7 +47,7 @@ begin
 
     process (clk) begin
         if rising_edge (clk) then
-            inst_out <= unsigned (imem_ram (to_integer (inst_addr) / 4));
+            inst_out <= unsigned (to_stdlogicvector (imem_ram (to_integer (inst_addr) / 4)));
         end if;
     end process;
 
