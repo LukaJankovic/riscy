@@ -8,18 +8,18 @@ entity ifetch is
         clk : in std_logic;
         reset : in std_logic;
 
-        inst_addr : out unsigned (31 downto 0)
+        inst_addr : out std_logic_vector (31 downto 0)
     );
-end ifetch;
+end entity ifetch;
 
 architecture behav of ifetch is
     
-    signal pc : unsigned (31 downto 0);
-    signal pc_next : unsigned (31 downto 0);
+    signal pc : std_logic_vector (31 downto 0);
+    signal pc_next : std_logic_vector (31 downto 0);
 
 begin
 
-    pc_next <= pc + 4;
+    pc_next <= std_logic_vector (unsigned (pc) + 4);
 
     process (clk, reset) begin
         if reset = '1' then
@@ -31,4 +31,4 @@ begin
 
     inst_addr <= pc;
 
-end architecture;
+end architecture behav;

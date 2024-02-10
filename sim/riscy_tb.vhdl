@@ -3,7 +3,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity riscy_tb is
-end entity;
+end entity riscy_tb;
 
 architecture behav of riscy_tb is
 
@@ -33,4 +33,4 @@ begin
         reset => reset_tb
     );
 
-end architecture;
+end architecture behav;

@@ -5,26 +5,26 @@ use ieee.numeric_std.all;
 
 entity idecode is
     port (
-        inst : in unsigned (31 downto 0);
+        inst : in std_logic_vector (31 downto 0);
 
-        opcode : out unsigned (6 downto 0);
+        opcode : out std_logic_vector (6 downto 0);
 
-        rd : out unsigned (4 downto 0);
-        rs1 : out unsigned (4 downto 0);
-        rs2 : out unsigned (4 downto 0);
+        rd : out std_logic_vector (4 downto 0);
+        rs1 : out std_logic_vector (4 downto 0);
+        rs2 : out std_logic_vector (4 downto 0);
 
-        shamt : out unsigned (4 downto 0);
+        shamt : out std_logic_vector (4 downto 0);
 
-        funct3 : out unsigned (2 downto 0);
-        funct7 : out unsigned (6 downto 0);
+        funct3 : out std_logic_vector (2 downto 0);
+        funct7 : out std_logic_vector (6 downto 0);
 
-        immediate : out unsigned (31 downto 0)
+        immediate : out std_logic_vector (31 downto 0)
     );
-end idecode;
+end entity idecode;
 
-architecture rtl of idecode is
+architecture behav of idecode is
 
-    signal opcode_internal : unsigned (6 downto 0);
+    signal opcode_internal : std_logic_vector (6 downto 0);
 
 begin
 
@@ -49,4 +49,4 @@ begin
         (31 downto 11 => inst(31)) & inst(30 downto 25) & inst(11 downto 7)                     when "0100011", -- S type
         (others => '0') when others;
 
-end architecture;
+end architecture behav;

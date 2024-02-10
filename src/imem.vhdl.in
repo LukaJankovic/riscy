@@ -8,10 +8,10 @@ entity imem is
     port (
         clk : in std_logic;
 
-        inst_addr : in unsigned (31 downto 0);
-        inst_out : out unsigned (31 downto 0)
+        inst_addr : in std_logic_vector (31 downto 0);
+        inst_out : out std_logic_vector (31 downto 0)
     );
-end imem;
+end entity imem;
 
 architecture behav of imem is
 
@@ -35,8 +35,8 @@ begin
 
     process (clk) begin
         if rising_edge (clk) then
-            inst_out <= unsigned (to_stdlogicvector (imem_ram (to_integer (inst_addr) / 4)));
+            inst_out <= to_stdlogicvector (imem_ram (to_integer (unsigned (inst_addr)) / 4));
         end if;
     end process;
 
-end architecture;
+end architecture behav;
