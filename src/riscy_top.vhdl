@@ -103,4 +103,13 @@ begin
         immediate => immediate
     );
 
-end architecture;
+    U4 : regs port map(
+        clk => clk,
+        reset => reset,
+        rs1 => rs1,
+        rs2 => rs2,
+        rdat1 => rdat1,
+        rdat2 => rdat2
+    );
+
+end architecture behav;
