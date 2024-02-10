@@ -29,19 +29,7 @@ architecture behav of imem is
         return imem;
     end function;
 
-    signal imem_ram : imem_type := init_ram ("../prog/strlen.bin");
-
-    --signal imem_ram : imem_type := (
-    --    x"00000293",
-    --    x"00a28333",
-    --    x"00030303",
-    --    x"00030663",
-    --    x"00128293",
-    --    x"ff1ff06f",
-    --    x"00028513",
-    --    x"00008067",
-    --    others => (others => '0')
-    --);
+    signal imem_ram : imem_type := init_ram ("../prog/{{MEM_FILE}}");
 
 begin
 

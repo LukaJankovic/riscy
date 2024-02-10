@@ -1,4 +1,17 @@
-# riscv64-unknown-elf-as.exe strlen.s -o strlen.o -march=rv32i
-# riscv64-unknown-elf-objcopy.exe -O binary strlen.o strlen.bin
-# xxd -e -g 4 .\strlen.bin | awk '{$1=\"\"}1' | awk 'NF{NF--};1' | sed 's/ /\n/g' | ???
-# Missing convert hex->bin that works cross platform
+PREFIX := riscv64-unknown-elf
+AS := $(PREFIX)-as.exe
+OBJCOPY := $(PREFIX)-objcopy.exe
+
+%.o: %.s
+	$(AS) $< -o $@ -march=rv32i
+
+%.bin: %.o
+	$(OBJCOPY) -O binary $< $@
+
+%.dat: %.bin
+	xxd -e -g 4 $< | awk '{$$1=""; print}' | awk 'NF{NF--};1' | sed 's/ /\n/g' | python3 hex2bin.py > $@
+
+all: $(patsubst %.s,%.dat,$(wildcard *.s))
+
+clean:
+	rm -f *.o *.bin *.dat

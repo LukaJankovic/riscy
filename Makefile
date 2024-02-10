@@ -30,10 +30,13 @@ $(WAVEFORM_VCD): $(SRC_DIR)/*.vhdl
 $(SRC_DIR)/*.vhdl: $(BUILD_DIR) 
 	source $(VIVADO_SETTINGS) && \
 	cd $(BUILD_DIR) && \
-	xvhdl ../$(SRC_DIR)/*.vhdl ../$(SIM_DIR)/*.vhdl
+	cp ../$(SRC_DIR)/imem.vhdl.in ./imem.vhdl && \
+	sed -e 's/{{MEM_FILE}}/$(MEM_FILE)/g' ../$(SRC_DIR)/imem.vhdl.in > imem.vhdl && \
+	xvhdl imem.vhdl ../$(SRC_DIR)/*.vhdl ../$(SIM_DIR)/*.vhdl
+
+$(SRC_DIR)/imem.vhdl.in:
 
 $(BUILD_DIR):
-	source $(VIVADO_SETTINGS) && \
 	mkdir -p $@
 
 build: $(BUILD_DIR)/build.tcl
