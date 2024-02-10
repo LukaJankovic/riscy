@@ -19,7 +19,10 @@ THREADS		:= 16
 
 all: sim
 
-sim: $(WAVEFORM_VCD)
+sim: clear_mem $(WAVEFORM_VCD)
+
+clear_mem:
+	rm -f $(BUILD_DIR)/imem.vhdl
 
 $(WAVEFORM_VCD): $(SRC_DIR)/*.vhdl
 	source $(VIVADO_SETTINGS) && \
