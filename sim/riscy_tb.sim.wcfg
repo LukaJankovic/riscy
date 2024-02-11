@@ -11,12 +11,12 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="244.888 ns"></ZoomEndTime>
-      <Cursor1Time time="84.112 ns"></Cursor1Time>
+      <ZoomEndTime time="129.181 ns"></ZoomEndTime>
+      <Cursor1Time time="76.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="164"></NameColumnWidth>
-      <ValueColumnWidth column_width="116"></ValueColumnWidth>
+      <ValueColumnWidth column_width="108"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="22" />
    <wvobject fp_name="/riscy_tb/U1/clk" type="logic">
@@ -132,6 +132,7 @@
       <wvobject fp_name="/riscy_tb/U1/U4/regs_file" type="array">
          <obj_property name="ElementShortName">regs_file[0:31][31:0]</obj_property>
          <obj_property name="ObjectShortName">regs_file[0:31][31:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group87" type="group">
@@ -213,6 +214,27 @@
       <obj_property name="label">dmem</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/riscy_tb/U1/U7/op" type="array">
+         <obj_property name="ElementShortName">op[2:0]</obj_property>
+         <obj_property name="ObjectShortName">op[2:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/op_n" type="array">
+         <obj_property name="ElementShortName">op_n[2:0]</obj_property>
+         <obj_property name="ObjectShortName">op_n[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/op[2]" type="logic">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">[2]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/op[1]" type="logic">
+         <obj_property name="ElementShortName">[1]</obj_property>
+         <obj_property name="ObjectShortName">[1]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/op[0]" type="logic">
+         <obj_property name="ElementShortName">[0]</obj_property>
+         <obj_property name="ObjectShortName">[0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/riscy_tb/U1/U7/dmem_waddr" type="array">
          <obj_property name="ElementShortName">dmem_waddr[31:0]</obj_property>
          <obj_property name="ObjectShortName">dmem_waddr[31:0]</obj_property>
@@ -236,6 +258,14 @@
       <wvobject fp_name="/riscy_tb/U1/U7/dmem_ram" type="array">
          <obj_property name="ElementShortName">dmem_ram[0:31][31:0]</obj_property>
          <obj_property name="ObjectShortName">dmem_ram[0:31][31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/wdat" type="array">
+         <obj_property name="ElementShortName">wdat[31:0]</obj_property>
+         <obj_property name="ObjectShortName">wdat[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/riscy_tb/U1/U7/dout" type="array">
+         <obj_property name="ElementShortName">dout[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dout[31:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="divider" fp_name="divider62">

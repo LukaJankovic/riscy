@@ -85,6 +85,7 @@ architecture behav of riscy_top is
             alu_src2_mux : out std_logic_vector (0 downto 0);
             alu_op : out std_logic_vector (2 downto 0);
 
+            dmem_op : out std_logic_vector (2 downto 0);
             dmem_wen : out std_logic;
 
             wb_mux : out std_logic;
@@ -114,6 +115,9 @@ architecture behav of riscy_top is
     component dmem is
         port (
             clk : in std_logic;
+            reset : in std_logic;
+
+            op : in std_logic_vector (2 downto 0);
 
             dmem_waddr : in std_logic_vector (31 downto 0);
             dmem_wdat : in std_logic_vector (31 downto 0);
@@ -170,6 +174,10 @@ architecture behav of riscy_top is
 
     signal alu_op : std_logic_vector (2 downto 0);
     signal alu_op_ex : std_logic_vector (2 downto 0);
+
+    signal dmem_op : std_logic_vector (2 downto 0);
+    signal dmem_op_ex : std_logic_vector (2 downto 0);
+    signal dmem_op_mem : std_logic_vector (2 downto 0);
 
     signal opa : std_logic_vector (31 downto 0);
     signal opb : std_logic_vector (31 downto 0);
@@ -244,6 +252,7 @@ begin
         use_alt => use_alt,
         alu_src2_mux => alu_src2_mux,
         alu_op => alu_op,
+        dmem_op => dmem_op,
         dmem_wen => dmem_wen,
         wb_mux => wb_mux,
         regs_wen => regs_wen
@@ -261,6 +270,8 @@ begin
 
     U7 : dmem port map (
         clk => clk,
+        reset => reset,
+        op => dmem_op_mem,
         dmem_waddr => res,
         dmem_wdat => rdat2_mem,
         dmem_wen => dmem_wen_mem,
@@ -288,6 +299,8 @@ begin
             rdat2_mem <= rdat2;
             dmem_wen_ex <= dmem_wen;
             dmem_wen_mem <= dmem_wen_ex;
+            dmem_op_ex <= dmem_op;
+            dmem_op_mem <= dmem_op_ex;
             regs_wen_ex <= regs_wen;
             regs_wen_mem <= regs_wen_ex;
             regs_wen_wb <= regs_wen_mem;
@@ -296,6 +309,8 @@ begin
             wb_mux_wb <= wb_mux_mem;
         end if;
     end process;
+
+    -- MUX
 
     opa <= rdat1;
 

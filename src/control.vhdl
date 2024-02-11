@@ -11,6 +11,7 @@ entity control is
         alu_src2_mux : out std_logic_vector (0 downto 0);
         alu_op : out std_logic_vector (2 downto 0);
 
+        dmem_op : out std_logic_vector (2 downto 0);
         dmem_wen : out std_logic;
 
         wb_mux : out std_logic;
@@ -34,6 +35,10 @@ begin
     with opcode select alu_op <=
         funct3 when "0010011" | "0110011",
         "000" when others;
+
+    with opcode select dmem_op <=
+        funct3 when "0100011" | "0000011",
+        "111" when others;
 
     with opcode select dmem_wen <=
         '1' when "0100011",
