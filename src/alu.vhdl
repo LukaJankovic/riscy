@@ -10,7 +10,7 @@ entity alu is
         opa : in std_logic_vector (31 downto 0);
         opb : in std_logic_vector (31 downto 0);
 
-        funct3 : in std_logic_vector (2 downto 0);
+        op : in std_logic_vector (2 downto 0);
         use_alt : in std_logic;
         alt : in std_logic;
 
@@ -29,7 +29,7 @@ begin
 
             res_internal <= (others => '0');
 
-            case funct3 is
+            case op is
                 when "000" =>
                     if (use_alt = '1' and alt = '1') then
                         res_internal <= unsigned (opa) - unsigned (opb);
