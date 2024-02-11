@@ -89,10 +89,14 @@ architecture behav of riscy_top is
 
     component alu is
         port (
+            clk : in std_logic;
+
             opa : in std_logic_vector (31 downto 0);
             opb : in std_logic_vector (31 downto 0);
 
             funct3 : in std_logic_vector (2 downto 0);
+            use_alt : in std_logic;
+            alt : in std_logic;
 
             res : out std_logic_vector (31 downto 0)
         );
@@ -133,6 +137,9 @@ architecture behav of riscy_top is
     signal funct3_ex : std_logic_vector (2 downto 0);
     signal immediate_ex : std_logic_vector (31 downto 0);
 
+    signal use_alt : std_logic;
+    signal use_alt_n : std_logic;
+
     signal rdat1 : std_logic_vector (31 downto 0);
     signal rdat2 : std_logic_vector (31 downto 0);
 
@@ -143,7 +150,6 @@ architecture behav of riscy_top is
     signal opb : std_logic_vector (31 downto 0);
     signal res : std_logic_vector (31 downto 0);
 
-    signal res_mem : std_logic_vector (31 downto 0);
     signal res_wb : std_logic_vector (31 downto 0);
 
     signal regs_wen : std_logic;
@@ -201,9 +207,12 @@ begin
     );
 
     U6 : alu port map(
+        clk => clk,
         opa => opa,
         opb => opb,
         funct3 => funct3_ex,
+        use_alt => use_alt_n,
+        alt => immediate_ex (5),
         res => res
     );
 
@@ -219,16 +228,20 @@ begin
             alu_src2_ex <= alu_src2;
             funct3_ex <= funct3;
             immediate_ex <= immediate;
+            use_alt_n <= use_alt;
             rd_ex <= rd;
             rd_mem <= rd_ex;
             rd_wb <= rd_mem;
-            res_mem <= res;
-            res_wb <= res_mem;
+            res_wb <= res;
             regs_wen_ex <= regs_wen;
             regs_wen_mem <= regs_wen_ex;
             regs_wen_wb <= regs_wen_mem;
         end if;
     end process;
+
+    with opcode select use_alt <=
+        '1' when "0010011",
+        '0' when others;
 
     opa <= rdat1;
 

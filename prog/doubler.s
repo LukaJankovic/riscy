@@ -3,7 +3,7 @@
     nop
     nop
     nop
-    addi a0, a0, 1
+    slli a0, a0, 5
 #doubler:
 #    add a0, a0, a0
 #    j doubler
