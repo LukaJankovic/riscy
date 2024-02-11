@@ -19,25 +19,18 @@ THREADS		:= 16
 
 all: sim
 
-sim: clear_mem $(WAVEFORM_VCD)
+sim: mem $(WAVEFORM_VCD)
 
-clear_mem:
-	rm -f $(BUILD_DIR)/imem.vhdl
+mem:
+	cd $(BUILD_DIR) && \
+	sed -e 's/{{MEM_FILE}}/$(MEM_FILE)/g' ../$(SRC_DIR)/imem.vhdl.in > imem.vhdl
 
-$(WAVEFORM_VCD): $(SRC_DIR)/*.vhdl
+$(WAVEFORM_VCD): $(SRC_DIR)/*.vhdl $(SIM_DIR)/*.vhdl
 	source $(VIVADO_SETTINGS) && \
 	cd $(BUILD_DIR) && \
+	xvhdl ../$(SRC_DIR)/*.vhdl ../$(SIM_DIR)/*.vhdl imem.vhdl && \
 	xelab -debug typical -top $(SIM_TOP) -snapshot $(SIM_TOP)_snapshot && \
 	xsim $(SIM_TOP)_snapshot -gui -view ../$(WAVEFORM_CFG)
-
-$(SRC_DIR)/*.vhdl: $(BUILD_DIR) 
-	source $(VIVADO_SETTINGS) && \
-	cd $(BUILD_DIR) && \
-	cp ../$(SRC_DIR)/imem.vhdl.in ./imem.vhdl && \
-	sed -e 's/{{MEM_FILE}}/$(MEM_FILE)/g' ../$(SRC_DIR)/imem.vhdl.in > imem.vhdl && \
-	xvhdl imem.vhdl ../$(SRC_DIR)/*.vhdl ../$(SIM_DIR)/*.vhdl
-
-$(SRC_DIR)/imem.vhdl.in:
 
 $(BUILD_DIR):
 	mkdir -p $@
