@@ -35,7 +35,7 @@ $(WAVEFORM_VCD): $(SRC_DIR)/*.vhdl $(SIM_DIR)/*.vhdl
 $(BUILD_DIR):
 	mkdir -p $@
 
-build: $(BUILD_DIR)/build.tcl
+build: mem $(BUILD_DIR)/build.tcl
 	source $(VIVADO_SETTINGS) && \
 	cd .build && \
 	vivado -mode batch -nojournal -source build.tcl

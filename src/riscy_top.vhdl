@@ -6,7 +6,10 @@ use ieee.numeric_std.all;
 entity riscy_top is
     port (
         clk : in std_logic;
-        reset : in std_logic
+        reset : in std_logic;
+
+        ssd0 : out std_logic_vector (6 downto 0);
+        ssd0_cs : out std_logic
     );
 end entity riscy_top;
 
@@ -66,7 +69,10 @@ architecture behav of riscy_top is
             rs2 : in std_logic_vector (4 downto 0);
 
             rdat1 : out std_logic_vector (31 downto 0);
-            rdat2 : out std_logic_vector (31 downto 0)
+            rdat2 : out std_logic_vector (31 downto 0);
+
+            debug_r : in std_logic_vector (4 downto 0);
+            debug_dat : out std_logic_vector (31 downto 0)
         );
     end component regs;
 
@@ -91,6 +97,22 @@ architecture behav of riscy_top is
             res : out std_logic_vector (31 downto 0)
         );
     end component alu;
+
+    -- mem stage
+
+    -- writeback stage
+
+    -- others
+
+    component pmod_ssd is
+        port(
+            clk : in std_logic;
+            num : in std_logic_vector (7 downto 0);
+
+            ssd : out std_logic_vector (6 downto 0);
+            cs : out std_logic
+        );
+    end component pmod_ssd;
 
     signal inst_addr : std_logic_vector (31 downto 0);
     signal inst_data : std_logic_vector (31 downto 0);
@@ -129,6 +151,9 @@ architecture behav of riscy_top is
     signal regs_wen_mem : std_logic;
     signal regs_wen_wb : std_logic;
 
+    signal debug_r : std_logic_vector (4 downto 0);
+    signal debug_dat : std_logic_vector (31 downto 0);
+
 begin
 
     U1 : ifetch port map(
@@ -164,7 +189,9 @@ begin
         rs1 => rs1,
         rs2 => rs2,
         rdat1 => rdat1,
-        rdat2 => rdat2
+        rdat2 => rdat2,
+        debug_r => debug_r,
+        debug_dat => debug_dat
     );
 
     U5 : control port map(
@@ -178,6 +205,13 @@ begin
         opb => opb,
         funct3 => funct3_ex,
         res => res
+    );
+
+    U7 : pmod_ssd port map(
+        clk => clk,
+        num => debug_dat (7 downto 0),
+        ssd => ssd0,
+        cs => ssd0_cs
     );
 
     process (clk) begin
@@ -206,5 +240,7 @@ begin
     with opcode select regs_wen <=
         '1' when "0010011" | "0110011",
         '0' when others;
+
+    debug_r <= "01010";
 
 end architecture behav;

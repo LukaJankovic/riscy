@@ -1,4 +1,5 @@
 set_param general.maxThreads {{THREADS}}
+read_vhdl imem.vhdl
 read_vhdl [glob ../{{SRC}}/*.vhdl]
 read_xdc ../{{CONST}}
 

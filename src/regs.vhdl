@@ -16,7 +16,10 @@ entity regs is
         rs2 : in std_logic_vector (4 downto 0);
 
         rdat1 : out std_logic_vector (31 downto 0);
-        rdat2 : out std_logic_vector (31 downto 0)
+        rdat2 : out std_logic_vector (31 downto 0);
+
+        debug_r : in std_logic_vector (4 downto 0);
+        debug_dat : out std_logic_vector (31 downto 0)
     );
 end entity regs;
 
@@ -40,5 +43,7 @@ begin
             end if;
         end if;
     end process;
+
+    debug_dat <= regs_file (to_integer (unsigned (debug_r)));
 
 end architecture behav;
