@@ -8,6 +8,10 @@ entity regs is
         clk : in std_logic;
         reset : in std_logic;
 
+        rd : in std_logic_vector (4 downto 0);
+        wdat : in std_logic_vector (31 downto 0);
+        wen : in std_logic;
+
         rs1 : in std_logic_vector (4 downto 0);
         rs2 : in std_logic_vector (4 downto 0);
 
@@ -30,6 +34,10 @@ begin
         elsif rising_edge (clk) then
             rdat1 <= regs_file (to_integer (unsigned (rs1)));
             rdat2 <= regs_file (to_integer (unsigned (rs2)));
+
+            if (wen = '1') then
+                regs_file (to_integer (unsigned (rd))) <= wdat;
+            end if;
         end if;
     end process;
 
