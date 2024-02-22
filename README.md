@@ -4,7 +4,7 @@ Simple implementation of rv32i in VHDL.
 
 ## Supported ops
 
-- [ ] LUI
+- [X] LUI
 - [ ] AUIPC
 - [ ] JAL
 - [ ] JALR
@@ -24,3 +24,7 @@ Simple implementation of rv32i in VHDL.
 - [X] Pmod SSD
 - [ ] Pmod UART
 - [ ] Pmod VGA
+
+## Other notes
+
+* Control signals go when reset = '1', allowing undefined behavior.

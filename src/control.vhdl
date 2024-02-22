@@ -24,7 +24,7 @@ architecture behav of control is
 begin
 
     with opcode select alu_src2_mux <=
-        "0" when "0010011" | "0100011" | "0000011", -- IMM
+        "0" when "0110111" | "0010011" | "0100011" | "0000011", -- IMM
         "1" when "0110011", -- RS2
         "-" when others;
 
@@ -49,7 +49,7 @@ begin
         '0' when others;
 
     with opcode select regs_wen <=
-        '1' when "0010011" | "0110011" | "0000011",
+        '1' when "0110111" | "0010011" | "0110011" | "0000011",
         '0' when others;
 
 end architecture behav;

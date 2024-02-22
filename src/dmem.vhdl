@@ -26,6 +26,8 @@ architecture behav of dmem is
 
     signal dmem_ram : dmem_type := (others => (others => '0'));
 
+    signal dmem_raddr_i : std_logic_vector (31 downto 0);
+
     signal wdat : std_logic_vector (31 downto 0);
     signal dout : std_logic_vector (31 downto 0);
 
@@ -43,13 +45,15 @@ begin
         if reset = '1' then
             dmem_ram <= (others => (others => '0'));
         elsif rising_edge (clk) then
-            dout <= to_stdlogicvector (dmem_ram (to_integer (unsigned (dmem_raddr))));
+            dout <= to_stdlogicvector (dmem_ram (to_integer (unsigned (dmem_raddr_i))));
 
             if (dmem_wen = '1') then
                 dmem_ram (to_integer (unsigned (dmem_waddr))) <= to_bitvector (wdat);
             end if;
         end if;
     end process;
+
+    dmem_raddr_i <= (31 downto 5 => '0') & dmem_raddr (4 downto 0);
 
     with op_n select dmem_out <=
         (31 downto 8 => dout (7)) & dout (7 downto 0) when "000",
