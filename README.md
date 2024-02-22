@@ -1,5 +1,26 @@
-# vivado-make
+# Riscy
 
-Simple make system for simulating, synthesizing and routing VHDL projects as well as programming boards. Requires Vivado and doesn't rely on any other tools (apart from `make`, install with `scoop` on Windows)
+Simple implementation of rv32i in VHDL.
 
-Supports VHDL and the example is build for the Zybo-Z7 board.
+## Supported ops
+
+- [ ] LUI
+- [ ] AUIPC
+- [ ] JAL
+- [ ] JALR
+- [ ] BEQ
+- [X] LB
+- [X] SB
+- [X] ADDI
+- [X] ADD
+
+## Supported CPU features
+
+- [ ] Data forwarding
+- [ ] Pipeline flushing
+
+## Supported Platform features
+
+- [X] Pmod SSD
+- [ ] Pmod UART
+- [ ] Pmod VGA
