@@ -82,6 +82,7 @@ architecture behav of riscy_top is
             opcode : in std_logic_vector (6 downto 0);
 
             use_alt : out std_logic;
+            alu_src1_mux : out std_logic_vector (0 downto 0);
             alu_src2_mux : out std_logic_vector (0 downto 0);
             alu_op : out std_logic_vector (2 downto 0);
 
@@ -146,6 +147,9 @@ architecture behav of riscy_top is
     signal inst_addr : std_logic_vector (31 downto 0);
     signal inst_data : std_logic_vector (31 downto 0);
 
+    signal pc_de : std_logic_vector (31 downto 0);
+    signal pc_ex : std_logic_vector (31 downto 0);
+
     signal opcode : std_logic_vector (6 downto 0);
     signal rd : std_logic_vector (4 downto 0);
     signal rs1 : std_logic_vector (4 downto 0);
@@ -168,6 +172,9 @@ architecture behav of riscy_top is
     signal rdat2 : std_logic_vector (31 downto 0);
 
     signal rdat2_mem : std_logic_vector (31 downto 0);
+
+    signal alu_src1_mux : std_logic_vector (0 downto 0);
+    signal alu_src1_mux_ex : std_logic_vector (0 downto 0);
 
     signal alu_src2_mux : std_logic_vector (0 downto 0);
     signal alu_src2_mux_ex : std_logic_vector (0 downto 0);
@@ -250,6 +257,7 @@ begin
         funct3 => funct3,
         opcode => opcode,
         use_alt => use_alt,
+        alu_src1_mux => alu_src1_mux,
         alu_src2_mux => alu_src2_mux,
         alu_op => alu_op,
         dmem_op => dmem_op,
@@ -288,6 +296,9 @@ begin
 
     process (clk) begin
         if rising_edge (clk) then
+            pc_de <= inst_addr;
+            pc_ex <= pc_de;
+            alu_src1_mux_ex <= alu_src1_mux;
             alu_src2_mux_ex <= alu_src2_mux;
             alu_op_ex <= alu_op;
             immediate_ex <= immediate;
@@ -312,7 +323,9 @@ begin
 
     -- MUX
 
-    opa <= rdat1;
+    with alu_src1_mux_ex select opa <=
+        pc_ex when "1",
+        rdat1 when others;
 
     with alu_src2_mux_ex select opb <=
         immediate_ex when "0",

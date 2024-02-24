@@ -8,6 +8,7 @@ entity control is
         opcode : in std_logic_vector (6 downto 0);
 
         use_alt : out std_logic;
+        alu_src1_mux : out std_logic_vector (0 downto 0);
         alu_src2_mux : out std_logic_vector (0 downto 0);
         alu_op : out std_logic_vector (2 downto 0);
 
@@ -24,9 +25,13 @@ architecture behav of control is
 begin
 
     with opcode select alu_src2_mux <=
-        "0" when "0110111" | "0010011" | "0100011" | "0000011", -- IMM
+        "0" when "0110111" | "0010011" | "0100011" | "0000011" | "0010111", -- IMM
         "1" when "0110011", -- RS2
         "-" when others;
+
+    with opcode select alu_src1_mux <=
+        "1" when "0010111", -- AUIPC
+        "0" when others;
 
     with opcode select use_alt <=
         '1' when "0010011",
@@ -49,7 +54,7 @@ begin
         '0' when others;
 
     with opcode select regs_wen <=
-        '1' when "0110111" | "0010011" | "0110011" | "0000011",
+        '1' when "0110111" | "0010011" | "0110011" | "0000011" | "0010111",
         '0' when others;
 
 end architecture behav;

@@ -5,7 +5,7 @@ Simple implementation of rv32i in VHDL.
 ## Supported ops
 
 - [X] LUI
-- [ ] AUIPC
+- [X] AUIPC
 - [ ] JAL
 - [ ] JALR
 - [ ] BEQ
