@@ -57,7 +57,7 @@ architecture behav of riscy_top is
     end component idecode;
 
     component regs is
-        port(
+        port (
             clk : in std_logic;
             reset : in std_logic;
 
@@ -77,7 +77,7 @@ architecture behav of riscy_top is
     end component regs;
 
     component control is
-        port(
+        port (
             funct3 : in std_logic_vector (2 downto 0);
             opcode : in std_logic_vector (6 downto 0);
 
@@ -135,7 +135,7 @@ architecture behav of riscy_top is
     -- others
 
     component pmod_ssd is
-        port(
+        port (
             clk : in std_logic;
             num : in std_logic_vector (7 downto 0);
 

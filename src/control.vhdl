@@ -3,7 +3,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity control is
-    port(
+    port (
         funct3 : in std_logic_vector (2 downto 0);
         opcode : in std_logic_vector (6 downto 0);
 

@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity pmod_ssd is
-    port(
+    port (
         clk : in std_logic;
         num : in std_logic_vector (7 downto 0);
 
