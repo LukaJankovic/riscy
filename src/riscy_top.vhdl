@@ -96,6 +96,19 @@ architecture behav of riscy_top is
 
     -- alu stage
 
+    component forward is
+        port (
+            alu_rs1 : in std_logic_vector (4 downto 0);
+            alu_rs2 : in std_logic_vector (4 downto 0);
+
+            mem_rd : in std_logic_vector (4 downto 0);
+            wb_rd : in std_logic_vector (4 downto 0);
+
+            rs1_mux : out std_logic_vector (1 downto 0);
+            rs2_mux : out std_logic_vector (1 downto 0)
+        );
+    end component forward;
+
     component alu is
         port (
             clk : in std_logic;
@@ -159,6 +172,9 @@ architecture behav of riscy_top is
     signal funct7 : std_logic_vector (6 downto 0);
     signal immediate : std_logic_vector (31 downto 0);
 
+    signal rs1_ex : std_logic_vector (4 downto 0);
+    signal rs2_ex : std_logic_vector (4 downto 0);
+
     signal rd_ex : std_logic_vector (4 downto 0);
     signal rd_mem : std_logic_vector (4 downto 0);
     signal rd_wb : std_logic_vector (4 downto 0);
@@ -172,6 +188,12 @@ architecture behav of riscy_top is
     signal rdat2 : std_logic_vector (31 downto 0);
 
     signal rdat2_mem : std_logic_vector (31 downto 0);
+
+    signal rs1_fwd_mux : std_logic_vector (1 downto 0);
+    signal rs2_fwd_mux : std_logic_vector (1 downto 0);
+
+    signal rdat1_fwd : std_logic_vector (31 downto 0);
+    signal rdat2_fwd : std_logic_vector (31 downto 0);
 
     signal alu_src1_mux : std_logic_vector (0 downto 0);
     signal alu_src1_mux_ex : std_logic_vector (0 downto 0);
@@ -266,7 +288,16 @@ begin
         regs_wen => regs_wen
     );
 
-    U6 : alu port map (
+    U6 : forward port map (
+        alu_rs1 => rs1_ex,
+        alu_rs2 => rs2_ex,
+        mem_rd => rd_mem,
+        wb_rd => rd_wb,
+        rs1_mux => rs1_fwd_mux,
+        rs2_mux => rs2_fwd_mux
+    );
+
+    U7 : alu port map (
         clk => clk,
         opa => opa,
         opb => opb,
@@ -276,7 +307,7 @@ begin
         res => res
     );
 
-    U7 : dmem port map (
+    U8 : dmem port map (
         clk => clk,
         reset => reset,
         op => dmem_op_mem,
@@ -287,7 +318,7 @@ begin
         dmem_out => dmem_out
     );
 
-    U8 : pmod_ssd port map (
+    U9 : pmod_ssd port map (
         clk => clk,
         num => debug_dat (7 downto 0),
         ssd => ssd0,
@@ -298,6 +329,8 @@ begin
         if rising_edge (clk) then
             pc_de <= inst_addr;
             pc_ex <= pc_de;
+            rs1_ex <= rs1;
+            rs2_ex <= rs2;
             alu_src1_mux_ex <= alu_src1_mux;
             alu_src2_mux_ex <= alu_src2_mux;
             alu_op_ex <= alu_op;
@@ -323,13 +356,23 @@ begin
 
     -- MUX
 
+    with rs1_fwd_mux select rdat1_fwd <=
+        res when "10",
+        dmem_out when "01",
+        rdat1 when others;
+
+    with rs2_fwd_mux select rdat2_fwd <=
+        res when "10",
+        dmem_out when "01",
+        rdat2 when others;
+
     with alu_src1_mux_ex select opa <=
         pc_ex when "1",
-        rdat1 when others;
+        rdat1_fwd when others;
 
     with alu_src2_mux_ex select opb <=
         immediate_ex when "0",
-        rdat2 when "1",
+        rdat2_fwd when "1",
         (others => '-') when others;
 
     with wb_mux_wb select regs_write <=
