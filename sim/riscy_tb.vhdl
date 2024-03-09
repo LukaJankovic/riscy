@@ -17,7 +17,7 @@ architecture behav of riscy_tb is
     end component;
 
     signal clk_tb : std_logic := '0';
-    signal reset_tb : std_logic := '1';
+    signal reset_tb : std_logic := '0';
 
 begin
 
@@ -26,7 +26,13 @@ begin
         wait for clk_period / 2;
     end process;
 
-    reset_tb <= '0' after 3 * clk_period / 2;
+    process begin
+        --wait for clk_period / 4;
+        reset_tb <= '1';
+        wait for 3 * clk_period / 2;
+        reset_tb <= '0';
+        wait;
+    end process;
 
     U1 : riscy_top port map (
         clk => clk_tb,

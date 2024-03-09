@@ -325,8 +325,33 @@ begin
         cs => ssd0_cs
     );
 
-    process (clk) begin
-        if rising_edge (clk) then
+    process (clk, reset) begin
+        if reset = '1' then
+            pc_de <= (others => '0');
+            pc_ex <= (others => '0');
+            rs1_ex <= (others => '0');
+            rs2_ex <= (others => '0');
+            alu_src1_mux_ex <= (others => '0');
+            alu_src2_mux_ex <= (others => '0');
+            alu_op_ex <= (others => '0');
+            immediate_ex <= (others => '0');
+            use_alt_ex <= '0';
+            rd_ex <= (others => '0');
+            rd_mem <= (others => '0');
+            rd_wb <= (others => '0');
+            res_wb <= (others => '0');
+            rdat2_mem <= (others => '0');
+            dmem_wen_ex <= '0';
+            dmem_wen_mem <= '0';
+            dmem_op_ex <= (others => '0');
+            dmem_op_mem <= (others => '0');
+            regs_wen_ex <= '0';
+            regs_wen_mem <= '0';
+            regs_wen_wb <= '0';
+            wb_mux_ex <= '0';
+            wb_mux_mem <= '0';
+            wb_mux_wb <= '0';
+        elsif rising_edge (clk) then
             pc_de <= inst_addr;
             pc_ex <= pc_de;
             rs1_ex <= rs1;
@@ -373,7 +398,7 @@ begin
     with alu_src2_mux_ex select opb <=
         immediate_ex when "0",
         rdat2_fwd when "1",
-        (others => '-') when others;
+        (others => '0') when others;
 
     with wb_mux_wb select regs_write <=
         dmem_out when '1',
