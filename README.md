@@ -16,7 +16,8 @@ Simple implementation of rv32i in VHDL.
 
 ## Supported CPU features
 
-- [ ] Data forwarding
+- [X] Data forwarding
+    * Works fine in simulator, but not on FPGA with current forward program. Possibly due to looping instructions, will test after jump implemented.
 - [ ] Pipeline flushing
 
 ## Supported Platform features

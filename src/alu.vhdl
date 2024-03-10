@@ -6,6 +6,7 @@ use ieee.numeric_std.all;
 entity alu is
     port (
         clk : in std_logic;
+        reset : in std_logic;
 
         opa : in std_logic_vector (31 downto 0);
         opb : in std_logic_vector (31 downto 0);
@@ -68,6 +69,6 @@ begin
         end if;
     end process;
 
-    res <= std_logic_vector (res_internal);
+    res <= (others => '0') when reset = '1' else std_logic_vector (res_internal);
 
 end architecture behav;

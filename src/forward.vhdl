@@ -5,11 +5,14 @@ use ieee.numeric_std.all;
 
 entity forward is
     port (
+        alu_reset : in std_logic;
+
         alu_rs1 : in std_logic_vector (4 downto 0);
         alu_rs2 : in std_logic_vector (4 downto 0);
 
         mem_rd : in std_logic_vector (4 downto 0);
         wb_rd : in std_logic_vector (4 downto 0);
+        wb_n_rd : in std_logic_vector (4 downto 0);
 
         rs1_mux : out std_logic_vector (1 downto 0);
         rs2_mux : out std_logic_vector (1 downto 0)
@@ -19,14 +22,16 @@ end entity forward;
 architecture behav of forward is
 begin
 
-    with alu_rs1 select rs1_mux <=
-        "10" when mem_rd,
-        "01" when wb_rd,
-        "00" when others;
+    rs1_mux <= (others => '0') when alu_reset = '1' else
+        "01" when alu_rs1 = mem_rd else
+        "10" when alu_rs1 = wb_rd else
+        "11" when alu_rs1 = wb_n_rd else
+        "00";
 
-    with alu_rs2 select rs2_mux <=
-        "10" when mem_rd,
-        "01" when wb_rd,
-        "00" when others;
+    rs2_mux <= (others => '0') when alu_reset = '1' else
+        "01" when alu_rs2 = mem_rd else
+        "10" when alu_rs2 = wb_rd else
+        "11" when alu_rs2 = wb_n_rd else
+        "00";
 
 end architecture behav;

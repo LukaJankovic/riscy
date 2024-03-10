@@ -98,11 +98,14 @@ architecture behav of riscy_top is
 
     component forward is
         port (
+            alu_reset : in std_logic;
+
             alu_rs1 : in std_logic_vector (4 downto 0);
             alu_rs2 : in std_logic_vector (4 downto 0);
 
             mem_rd : in std_logic_vector (4 downto 0);
             wb_rd : in std_logic_vector (4 downto 0);
+            wb_n_rd : in std_logic_vector (4 downto 0);
 
             rs1_mux : out std_logic_vector (1 downto 0);
             rs2_mux : out std_logic_vector (1 downto 0)
@@ -112,6 +115,7 @@ architecture behav of riscy_top is
     component alu is
         port (
             clk : in std_logic;
+            reset : in std_logic;
 
             opa : in std_logic_vector (31 downto 0);
             opb : in std_logic_vector (31 downto 0);
@@ -157,6 +161,11 @@ architecture behav of riscy_top is
         );
     end component pmod_ssd;
 
+    signal reset_de : std_logic;
+    signal reset_ex : std_logic;
+    signal reset_mem : std_logic;
+    signal reset_wb : std_logic;
+
     signal inst_addr : std_logic_vector (31 downto 0);
     signal inst_data : std_logic_vector (31 downto 0);
 
@@ -178,6 +187,7 @@ architecture behav of riscy_top is
     signal rd_ex : std_logic_vector (4 downto 0);
     signal rd_mem : std_logic_vector (4 downto 0);
     signal rd_wb : std_logic_vector (4 downto 0);
+    signal rd_wb_n : std_logic_vector (4 downto 0);
 
     signal immediate_ex : std_logic_vector (31 downto 0);
 
@@ -224,6 +234,7 @@ architecture behav of riscy_top is
     signal wb_mux_wb : std_logic;
 
     signal res_wb : std_logic_vector (31 downto 0);
+    signal res_wb_n : std_logic_vector (31 downto 0);
 
     signal regs_wen : std_logic;
     signal regs_wen_ex : std_logic;
@@ -289,16 +300,19 @@ begin
     );
 
     U6 : forward port map (
+        alu_reset => reset_ex,
         alu_rs1 => rs1_ex,
         alu_rs2 => rs2_ex,
         mem_rd => rd_mem,
         wb_rd => rd_wb,
+        wb_n_rd => rd_wb_n,
         rs1_mux => rs1_fwd_mux,
         rs2_mux => rs2_fwd_mux
     );
 
     U7 : alu port map (
         clk => clk,
+        reset => reset_ex,
         opa => opa,
         opb => opb,
         op => alu_op_ex,
@@ -327,7 +341,28 @@ begin
 
     process (clk, reset) begin
         if reset = '1' then
+            reset_de <= '1';
+            reset_ex <= '1';
+            reset_mem <= '1';
+            reset_wb <= '1';
+        elsif falling_edge(clk) then
+            reset_de <= reset;
+            reset_ex <= reset_de;
+            reset_mem <= reset_ex;
+            reset_wb <= reset_mem;
+        end if;
+    end process;
+
+    process (clk, reset) begin
+        if reset = '1' then
             pc_de <= (others => '0');
+        elsif rising_edge (clk) then
+            pc_de <= inst_addr;
+        end if;
+    end process;
+
+    process (clk, reset_de) begin
+        if reset_de = '1' then
             pc_ex <= (others => '0');
             rs1_ex <= (others => '0');
             rs2_ex <= (others => '0');
@@ -337,22 +372,11 @@ begin
             immediate_ex <= (others => '0');
             use_alt_ex <= '0';
             rd_ex <= (others => '0');
-            rd_mem <= (others => '0');
-            rd_wb <= (others => '0');
-            res_wb <= (others => '0');
-            rdat2_mem <= (others => '0');
             dmem_wen_ex <= '0';
-            dmem_wen_mem <= '0';
             dmem_op_ex <= (others => '0');
-            dmem_op_mem <= (others => '0');
             regs_wen_ex <= '0';
-            regs_wen_mem <= '0';
-            regs_wen_wb <= '0';
             wb_mux_ex <= '0';
-            wb_mux_mem <= '0';
-            wb_mux_wb <= '0';
         elsif rising_edge (clk) then
-            pc_de <= inst_addr;
             pc_ex <= pc_de;
             rs1_ex <= rs1;
             rs2_ex <= rs2;
@@ -362,33 +386,67 @@ begin
             immediate_ex <= immediate;
             use_alt_ex <= use_alt;
             rd_ex <= rd;
+            dmem_wen_ex <= dmem_wen;
+            dmem_op_ex <= dmem_op;
+            regs_wen_ex <= regs_wen;
+            wb_mux_ex <= wb_mux;
+        end if;
+    end process;
+
+    process (clk, reset_mem) begin
+        if reset_mem = '1' then
+            rd_mem <= (others => '0');
+            rdat2_mem <= (others => '0');
+            dmem_wen_mem <= '0';
+            dmem_op_mem <= (others => '0');
+            regs_wen_mem <= '0';
+            wb_mux_mem <= '0';
+        elsif rising_edge(clk) then
             rd_mem <= rd_ex;
+            rdat2_mem <= rdat2;
+            dmem_wen_mem <= dmem_wen_ex;
+            dmem_op_mem <= dmem_op_ex;
+            regs_wen_mem <= regs_wen_ex;
+            wb_mux_mem <= wb_mux_ex;
+        end if;
+    end process;
+
+    process (clk, reset_wb) begin
+        if reset_wb = '1' then
+            rd_wb <= (others => '0');
+            res_wb <= (others => '0');
+            regs_wen_wb <= '0';
+            wb_mux_wb <= '0';
+        elsif rising_edge (clk) then
             rd_wb <= rd_mem;
             res_wb <= res;
-            rdat2_mem <= rdat2;
-            dmem_wen_ex <= dmem_wen;
-            dmem_wen_mem <= dmem_wen_ex;
-            dmem_op_ex <= dmem_op;
-            dmem_op_mem <= dmem_op_ex;
-            regs_wen_ex <= regs_wen;
-            regs_wen_mem <= regs_wen_ex;
             regs_wen_wb <= regs_wen_mem;
-            wb_mux_ex <= wb_mux;
-            wb_mux_mem <= wb_mux_ex;
             wb_mux_wb <= wb_mux_mem;
+        end if;
+    end process;
+
+    process (clk, reset_wb) begin
+        if reset_wb = '1' then
+            res_wb_n <= (others => '0');
+            rd_wb_n <= (others => '0');
+        elsif rising_edge (clk) then
+            res_wb_n <= regs_write;
+            rd_wb_n <= rd_wb;
         end if;
     end process;
 
     -- MUX
 
     with rs1_fwd_mux select rdat1_fwd <=
-        res when "10",
-        dmem_out when "01",
+        res when "01",
+        res_wb when "10",
+        res_wb_n when "11",
         rdat1 when others;
 
     with rs2_fwd_mux select rdat2_fwd <=
-        res when "10",
-        dmem_out when "01",
+        res when "01",
+        res_wb when "10",
+        res_wb_n when "11",
         rdat2 when others;
 
     with alu_src1_mux_ex select opa <=
@@ -404,6 +462,6 @@ begin
         dmem_out when '1',
         res_wb when others;
 
-    debug_r <= "01100";
+    debug_r <= "01010";
 
 end architecture behav;
