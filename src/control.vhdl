@@ -18,7 +18,7 @@ entity control is
         wb_mux : out std_logic;
         regs_wen : out std_logic;
 
-        stall : out std_logic
+        jmp : out std_logic
     );
 end entity control;
 
@@ -60,7 +60,7 @@ begin
         '1' when "0110111" | "0010011" | "0110011" | "0000011" | "0010111" | "1101111",
         '0' when others;
 
-    with opcode select stall <=
+    with opcode select jmp <=
         '1' when "1101111" | "1100111" | "1100011",
         '0' when others;
 

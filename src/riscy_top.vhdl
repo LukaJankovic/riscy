@@ -22,6 +22,9 @@ architecture behav of riscy_top is
             clk : in std_logic;
             reset : in std_logic;
 
+            offset : in std_logic_vector (31 downto 0);
+            jmp : in std_logic;
+
             inst_addr : out std_logic_vector (31 downto 0)
         );
     end component ifetch;
@@ -92,9 +95,19 @@ architecture behav of riscy_top is
             wb_mux : out std_logic;
             regs_wen : out std_logic;
 
-            stall : out std_logic
+            jmp : out std_logic
         );
     end component control;
+
+    component stall is
+        port (
+            clk : in std_logic;
+            reset : in std_logic;
+
+            jmp : in std_logic;
+            stall_sig : out std_logic
+        );
+    end component stall;
 
     -- alu stage
 
@@ -169,6 +182,7 @@ architecture behav of riscy_top is
     signal reset_wb : std_logic;
 
     signal inst_addr : std_logic_vector (31 downto 0);
+    signal inst_data_raw : std_logic_vector (31 downto 0);
     signal inst_data : std_logic_vector (31 downto 0);
 
     signal pc_de : std_logic_vector (31 downto 0);
@@ -248,21 +262,23 @@ architecture behav of riscy_top is
     signal debug_r : std_logic_vector (4 downto 0);
     signal debug_dat : std_logic_vector (31 downto 0);
 
-    signal stall : std_logic;
-    signal stall_ctr : std_logic_vector (1 downto 0);
+    signal stall_sig : std_logic;
+    signal jmp : std_logic;
 
 begin
 
     U1 : ifetch port map (
-        clk,
-        reset,
-        inst_addr
+        clk => clk,
+        reset => reset,
+        offset => immediate,
+        jmp => jmp,
+        inst_addr => inst_addr
     );
 
     U2 : imem port map (
         clk,
         inst_addr,
-        inst_data
+        inst_data_raw
     );
 
     U3 : idecode port map (
@@ -302,10 +318,17 @@ begin
         dmem_wen => dmem_wen,
         wb_mux => wb_mux,
         regs_wen => regs_wen,
-        stall => stall
+        jmp => jmp
     );
 
-    U6 : forward port map (
+    U6 : stall port map (
+        clk => clk,
+        reset => reset,
+        jmp => jmp,
+        stall_sig => stall_sig
+    );
+
+    U7 : forward port map (
         alu_reset => reset_ex,
         alu_rs1 => rs1_ex,
         alu_rs2 => rs2_ex,
@@ -316,7 +339,7 @@ begin
         rs2_mux => rs2_fwd_mux
     );
 
-    U7 : alu port map (
+    U8 : alu port map (
         clk => clk,
         reset => reset_ex,
         opa => opa,
@@ -327,7 +350,7 @@ begin
         res => res
     );
 
-    U8 : dmem port map (
+    U9 : dmem port map (
         clk => clk,
         reset => reset,
         op => dmem_op_mem,
@@ -338,7 +361,7 @@ begin
         dmem_out => dmem_out
     );
 
-    U9 : pmod_ssd port map (
+    U10 : pmod_ssd port map (
         clk => clk,
         num => debug_dat (7 downto 0),
         ssd => ssd0,
@@ -443,6 +466,10 @@ begin
 
     -- MUX
 
+    with stall_sig select inst_data <=
+        (others => '0') when '1',
+        inst_data_raw when others;
+
     with rs1_fwd_mux select rdat1_fwd <=
         res when "01",
         res_wb when "10",
@@ -468,6 +495,8 @@ begin
     with wb_mux_wb select regs_write <=
         dmem_out when '1',
         res_wb when others;
+
+    -- Others
 
     debug_r <= "01010";
 

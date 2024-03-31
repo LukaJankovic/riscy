@@ -6,7 +6,7 @@ Simple implementation of rv32i in VHDL.
 
 - [X] LUI
 - [X] AUIPC
-- [ ] JAL
+- [X] JAL
 - [ ] JALR
 - [ ] BEQ
 - [X] LB

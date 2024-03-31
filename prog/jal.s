@@ -15,4 +15,9 @@ test:
     nop
     nop
     addi a0, a0, 7
-    jal a1, test
+loop:
+    jal a1, loop
+    addi a0, a0, 8
+    addi a0, a0, 9
+    addi a0, a0, 10
+    addi a0, a0, 11

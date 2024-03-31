@@ -8,6 +8,9 @@ entity ifetch is
         clk : in std_logic;
         reset : in std_logic;
 
+        offset : in std_logic_vector (31 downto 0);
+        jmp : in std_logic;
+
         inst_addr : out std_logic_vector (31 downto 0)
     );
 end entity ifetch;
@@ -19,7 +22,8 @@ architecture behav of ifetch is
 
 begin
 
-    pc_next <= std_logic_vector (unsigned (pc) + 4);
+    pc_next <=  std_logic_vector (unsigned(pc) + unsigned(offset) - 4) when jmp = '1'
+                else std_logic_vector (unsigned (pc) + 4);
 
     process (clk, reset) begin
         if reset = '1' then
