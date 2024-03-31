@@ -82,15 +82,17 @@ architecture behav of riscy_top is
             opcode : in std_logic_vector (6 downto 0);
 
             use_alt : out std_logic;
-            alu_src1_mux : out std_logic_vector (0 downto 0);
-            alu_src2_mux : out std_logic_vector (0 downto 0);
+            alu_src1_mux : out std_logic_vector (1 downto 0);
+            alu_src2_mux : out std_logic_vector (1 downto 0);
             alu_op : out std_logic_vector (2 downto 0);
 
             dmem_op : out std_logic_vector (2 downto 0);
             dmem_wen : out std_logic;
 
             wb_mux : out std_logic;
-            regs_wen : out std_logic
+            regs_wen : out std_logic;
+
+            stall : out std_logic
         );
     end component control;
 
@@ -205,11 +207,11 @@ architecture behav of riscy_top is
     signal rdat1_fwd : std_logic_vector (31 downto 0);
     signal rdat2_fwd : std_logic_vector (31 downto 0);
 
-    signal alu_src1_mux : std_logic_vector (0 downto 0);
-    signal alu_src1_mux_ex : std_logic_vector (0 downto 0);
+    signal alu_src1_mux : std_logic_vector (1 downto 0);
+    signal alu_src1_mux_ex : std_logic_vector (1 downto 0);
 
-    signal alu_src2_mux : std_logic_vector (0 downto 0);
-    signal alu_src2_mux_ex : std_logic_vector (0 downto 0);
+    signal alu_src2_mux : std_logic_vector (1 downto 0);
+    signal alu_src2_mux_ex : std_logic_vector (1 downto 0);
 
     signal alu_op : std_logic_vector (2 downto 0);
     signal alu_op_ex : std_logic_vector (2 downto 0);
@@ -245,6 +247,9 @@ architecture behav of riscy_top is
 
     signal debug_r : std_logic_vector (4 downto 0);
     signal debug_dat : std_logic_vector (31 downto 0);
+
+    signal stall : std_logic;
+    signal stall_ctr : std_logic_vector (1 downto 0);
 
 begin
 
@@ -296,7 +301,8 @@ begin
         dmem_op => dmem_op,
         dmem_wen => dmem_wen,
         wb_mux => wb_mux,
-        regs_wen => regs_wen
+        regs_wen => regs_wen,
+        stall => stall
     );
 
     U6 : forward port map (
@@ -450,12 +456,13 @@ begin
         rdat2 when others;
 
     with alu_src1_mux_ex select opa <=
-        pc_ex when "1",
+        pc_ex when "01",
         rdat1_fwd when others;
 
     with alu_src2_mux_ex select opb <=
-        immediate_ex when "0",
-        rdat2_fwd when "1",
+        immediate_ex when "00",
+        rdat2_fwd when "01",
+        std_logic_vector(to_unsigned(4, 32)) when "10",
         (others => '0') when others;
 
     with wb_mux_wb select regs_write <=
