@@ -23,9 +23,11 @@ THREADS		:= 16
 ifeq ($(OS),Windows_NT)
 	MKDIR=mkdir
 	SOURCE=$(VIVADO_SETTINGS_WIN)
+	RM=del /f /q
 else
 	MKDIR=mkdir -p
 	SOURCE=source $(VIVADO_SETTINGS_LIN)
+	RM=rm -rf
 endif
 
 SRC_VHDL := $(wildcard $(SRC_DIR)/*.vhdl)
@@ -72,4 +74,4 @@ $(BUILD_DIR)/program.tcl: program.tcl.in $(BUILD_DIR)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR) *.log *.pb *.jou *.wdb *.str xsim.dir .Xil
+	$(RM) $(BUILD_DIR) $(wildcard *.log) $(wildcard *.pb) $(wildcard *.jou) $(wildcard *.wdb) $(wildcard *.str) xsim.dir .Xil
