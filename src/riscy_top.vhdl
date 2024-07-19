@@ -22,8 +22,12 @@ architecture behav of riscy_top is
             clk : in std_logic;
             reset : in std_logic;
 
+            opcode : in std_logic_vector (6 downto 0);
+
             offset : in std_logic_vector (31 downto 0);
+            rdat1 : in std_logic_vector (31 downto 0);
             jmp : in std_logic;
+            stall_sig : in std_logic;
 
             inst_addr : out std_logic_vector (31 downto 0)
         );
@@ -103,6 +107,8 @@ architecture behav of riscy_top is
         port (
             clk : in std_logic;
             reset : in std_logic;
+
+            opcode : in std_logic_vector (6 downto 0);
 
             jmp : in std_logic;
             stall_sig : out std_logic
@@ -270,8 +276,11 @@ begin
     U1 : ifetch port map (
         clk => clk,
         reset => reset,
+        opcode => opcode,
         offset => immediate,
+        rdat1 => rdat1_fwd,
         jmp => jmp,
+        stall_sig => stall_sig,
         inst_addr => inst_addr
     );
 
@@ -324,6 +333,7 @@ begin
     U6 : stall port map (
         clk => clk,
         reset => reset,
+        opcode => opcode,
         jmp => jmp,
         stall_sig => stall_sig
     );

@@ -29,12 +29,12 @@ begin
     with opcode select alu_src2_mux <=
         "00" when "0110111" | "0010011" | "0100011" | "0000011" | "0010111", -- IMM
         "01" when "0110011", -- RS2
-        "10" when "1101111", -- PC + 4 (JAL)
+        "10" when "1101111" | "1100111", -- 4 (JAL, JALR)
         "--" when others;
 
     with opcode select alu_src1_mux <=
-        "01" when "0010111" | "1101111", -- AUIPC, JAL
-        "00" when others;
+        "01" when "0010111" | "1101111", -- PC (AUIPC, JAL)
+        "00" when others; -- RS1
 
     with opcode select use_alt <=
         '1' when "0010011",
