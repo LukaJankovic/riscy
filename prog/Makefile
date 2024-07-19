@@ -1,6 +1,9 @@
 PREFIX := riscv64-unknown-elf
+GCC := $(PREFIX)-gcc.exe
 AS := $(PREFIX)-as.exe
 OBJCOPY := $(PREFIX)-objcopy.exe
+
+GCC_FLAGS := -nostartfiles -nostdlib -T rom_link -march=rv32i -mabi=ilp32
 
 ifeq ($(OS),Windows_NT)
 	RM := del
@@ -9,7 +12,7 @@ else
 endif
 
 %.o: %.s
-	$(AS) $< -o $@ -march=rv32i
+	$(GCC) $(GCC_FLAGS) $< -o $@
 
 %.bin: %.o
 	$(OBJCOPY) -O binary $< $@
